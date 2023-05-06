@@ -1,0 +1,93 @@
+// To get started, press Ctrl+Space to bring up the completion menu and view the available nodes.
+
+// You can also use the buttons in the sidebar to perform actions on nodes.
+// Actions currently available include:
+
+// * Enabling / disabling the node
+// * Adding the bus to a bus
+// * Removing the node
+// * Connecting ADC channels
+
+// For more help, browse the DeviceTree documentation at https://docs.zephyrproject.org/latest/guides/dts/index.html
+// You can also visit the nRF DeviceTree extension documentation at https://nrfconnect.github.io/vscode-nrf-connect/devicetree/nrfdevicetree.html
+
+/ {
+    internal {
+        compatible = "gpio-keys";
+        read_bat: read_bat {
+            gpios = <&gpio0 14 (GPIO_OPEN_DRAIN | GPIO_ACTIVE_LOW)>; // Pull it to ground when set to 1. Default in high impedane mode.
+        };
+        iset: iset {
+            gpios = <&gpio0 13 (GPIO_OPEN_DRAIN | GPIO_ACTIVE_LOW)>; // Pull it to ground when set to 1. Default in high impedane mode.
+        };
+    };
+
+    zephyr,user {
+        io-channels = <&adc 1>;
+    };
+
+    aliases {
+        read-bat = &read_bat;
+        iset = &iset;
+    };
+};
+
+
+// &xiao_i2c {
+//     status = "okay";
+//     vl53l0x@29 {
+//         compatible = "st,vl53l0x";
+//         reg = <0x29>;
+//         xshut-gpios = <&gpio0 29 GPIO_ACTIVE_HIGH>;
+//         status = "okay";
+//     };
+// 	lis2dw12@19 {
+// 		compatible = "st,lis2dw12";
+// 		reg = <0x19>;
+// 		status = "okay";
+//         power-mode = < 0 >;
+//         odr = < 0 >;
+//         bw-filt = < 3 >;
+//         int-pin = < 1 >;
+//         range = < 2 >;
+//         wakeup-source;
+// 	};
+// };
+
+&adc {
+    status = "okay";
+    #address-cells = <1>;
+    #size-cells = <0>;
+
+    // LiPo
+    channel@1 {
+        reg = <1>;
+        zephyr,gain = "ADC_GAIN_1_6"; // [MAX VALUE] * [GAIN] = [REFERENCE]
+        zephyr,reference = "ADC_REF_INTERNAL"; // 3.3V Reference (Voltage regulator)
+        zephyr,acquisition-time = < ADC_ACQ_TIME(ADC_ACQ_TIME_MICROSECONDS, 40) >;
+        // zephyr,acquisition-time = < ADC_ACQ_TIME(ADC_ACQ_TIME_MICROSECONDS, 3) >;
+        zephyr,input-positive = <NRF_SAADC_AIN7>; // P0.14
+        zephyr,resolution = < 12 >;
+        // zephyr,oversampling = < 8 >;
+    };
+};
+
+&ieee802154 {
+	status = "disabled";
+};
+
+&xiao_serial {
+    status = "disabled";
+};
+
+&zephyr_udc0 {
+    status = "disabled";
+};
+
+&usb_cdc_acm_uart {
+    status = "disabled";
+};
+
+&xiao_spi {
+    status = "disabled";
+};
