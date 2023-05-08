@@ -6,7 +6,6 @@
 
 static const struct spi_dt_spec spi = SPI_DT_SPEC_GET(DT_ALIAS(spi_flash0), SPI_WORD_SET(8), 0);
 
-
 void main(void)
 {
 	int rc;
@@ -15,13 +14,15 @@ void main(void)
 
 	if(!device_is_ready(spi.bus))
 	{
-		printk("Flash dev not ready\n");
+		printk("Flashdev not ready\n");
+		return;
 	}
 
 	rc = pm_device_action_run(spi.bus, PM_DEVICE_ACTION_SUSPEND);
 	if(rc < 0)
 	{
 		printk("State set failed (err %d)\n", rc);
+		return;
 	}
 
 	k_sleep(K_FOREVER);
