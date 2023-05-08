@@ -9,6 +9,7 @@ To build the sample with Visual Studio Code, follow the steps listed on the [How
 page in the nRF Connect for VS Code extension documentation. 
 See [Building and programming an application](https://developer.nordicsemi.com/nRF_Connect_SDK/doc/latest/nrf/getting_started/programming.html#gs-programming) for other building and programming scenarios 
 and [Testing and debugging an application](https://developer.nordicsemi.com/nRF_Connect_SDK/doc/latest/nrf/getting_started/testing.html#gs-testing) for general information about testing and debugging in the nRF Connect SDK.
+SDK used was: nRF Connect SDK 2.3.0
 
 # Flashing
 Flashing is done via SWD. 
