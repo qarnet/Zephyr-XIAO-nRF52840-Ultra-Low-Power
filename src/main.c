@@ -16,8 +16,6 @@
 #include <zephyr/drivers/gpio.h>
 #include <zephyr/drivers/spi.h>
 
-#include "sensors.h"
-
 #define BUSY_WAIT_S 2U
 #define SLEEP_S 2U
 static const struct gpio_dt_spec led_red = GPIO_DT_SPEC_GET(DT_ALIAS(led0), gpios);
