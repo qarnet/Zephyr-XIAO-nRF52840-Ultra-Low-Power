@@ -15,10 +15,12 @@
 #include <hal/nrf_gpio.h>
 #include <zephyr/drivers/gpio.h>
 #include <zephyr/drivers/spi.h>
+#include <zephyr/drivers/pwm.h>
 
 #define BUSY_WAIT_S 2U
 #define SLEEP_S 2U
 static const struct gpio_dt_spec led_red = GPIO_DT_SPEC_GET(DT_ALIAS(led0), gpios);
+static const struct pwm_dt_spec pwm_led0 = PWM_DT_SPEC_GET(DT_ALIAS(pwm_led0));
 
 /* Prevent deep sleep (system off) from being entered on long timeouts
  * or `K_FOREVER` due to the default residency policy.
@@ -52,6 +54,25 @@ void main(void)
 	if(!spi_is_ready_dt(&spi))
 	{
 		printk("SPI not ready\n");
+	}
+
+	// rc = pm_device_action_run(spi.bus, PM_DEVICE_ACTION_TURN_OFF);
+	// if(rc < 0)
+	// {
+	// 	printk("State set failed (err %d)\n", rc);
+	// }
+
+	NRF_SPIM3->ENABLE = 0; // 100uA reduction
+
+	if (!device_is_ready(pwm_led0.dev)) {
+		printk("Error: PWM device %s is not ready\n",
+		       pwm_led0.dev->name);
+	}
+
+	rc = pwm_set_pulse_dt(&pwm_led0, 0);
+	if(rc < 0)
+	{
+		printk("Error setting pwm (err %d)\n", rc);
 	}
 
 	// rc = spi_write_dt(&spi, &tx_buff);
@@ -90,10 +111,12 @@ void main(void)
 
 	k_msleep(1000);
 
-	NRF_CLOCK->TASKS_HFCLKSTOP;
-	NRF_RTC0->TASKS_STOP;
-	NRF_RTC1->TASKS_STOP;
-	NRF_RTC2->TASKS_STOP;
+	// NRF_SPIM1->TASKS_SUSPEND = 1;
+	// NRF_SPIM1->TASKS_STOP = 1;
+	// NRF_SPIM1->ENABLE = 0;
+
+	// NRF_CLOCK->TASKS_HFCLKSTOP;
+	// NRF_RTC1->TASKS_STOP;
 
 	/* Above we disabled entry to deep sleep based on duration of
 	 * controlled delay.  Here we need to override that, then
@@ -105,7 +128,7 @@ void main(void)
 	 * the pm subsystem will use the forced state. To confirm that the
 	 * forced state is used, lets set the same timeout used previously.
 	 */	
-	k_sleep(K_SECONDS(SLEEP_S));
+	k_sleep(K_FOREVER);
 
 	// gpio_pin_set_dt(&led_red, 0);
 
