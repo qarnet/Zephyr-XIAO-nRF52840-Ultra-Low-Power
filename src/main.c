@@ -4,24 +4,20 @@
 #include <zephyr/pm/policy.h>
 #include <zephyr/drivers/spi.h>
 
-static const struct spi_dt_spec spi = SPI_DT_SPEC_GET(DT_ALIAS(spi_flash0), SPI_WORD_SET(8), 0);
+static const struct device *const spi_bus = DEVICE_DT_GET(DT_BUS(DT_ALIAS(spi_flash0)));
 
 void main(void)
 {
 	int rc;
 
-	printk("\n%s low power demo\n", __TIME__);
-
-	if(!device_is_ready(spi.bus))
+	if(!device_is_ready(spi_bus))
 	{
-		printk("Flashdev not ready\n");
 		return;
 	}
 
-	rc = pm_device_action_run(spi.bus, PM_DEVICE_ACTION_SUSPEND);
+	rc = pm_device_action_run(spi_bus, PM_DEVICE_ACTION_SUSPEND);
 	if(rc < 0)
 	{
-		printk("State set failed (err %d)\n", rc);
 		return;
 	}
 
